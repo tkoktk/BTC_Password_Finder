@@ -1,4 +1,4 @@
-use bip38::{Decrypt, Error as Bip38Error};
+use bip38::Decrypt;
 // Grabbed these examples from the bip38 1.1.1 crate docs
 
 #[test]
