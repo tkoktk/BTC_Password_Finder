@@ -2,10 +2,6 @@
 
 Cargo.lock
 
-/default_mutations.txt
-/found_password.txt
-*.txt
-
 **/*.rs.bak
 
 # IDE files
