@@ -35,3 +35,16 @@ pub fn read_mutation_file() -> Vec<String> {
         }
     }
 }
+
+pub fn write_found_password(password: &str) -> Result<(), std::io::Error> {
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    
+    let content = format!("SUCCESS!\nPassword: {}\nTimestamp: {}\n", password, timestamp);
+    
+    fs::write("found_password.txt", content)?;
+    println!("Found password written to: found_password.txt");
+    Ok(())
+}
