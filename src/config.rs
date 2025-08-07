@@ -3,22 +3,22 @@ use std::path::Path;
 use std::process;
 use std::fs;
 
-pub fn get_mutation_file() -> String {
+///Abstracted code, try and read value from env var and if it doesn't exist use default txt file
+pub fn get_config_file(env_var: &str, default_name: &str) -> String {
+    let file_path = env::var(env_var)
+        .unwrap_or(default_name.to_string()) + ".txt";
     
-    let file_path = env::var("MUTATIONS_FILE")
-        .unwrap_or("default_mutations".to_string()) + ".txt";
-    
-     if Path::new(&file_path).exists() {
-        println!("Using mutation file: {}", file_path);
+    if Path::new(&file_path).exists() {
+        println!("Using {} file: {}", env_var.to_lowercase(), file_path);
         file_path
     } else {
-        eprintln!("Error: Mutation file '{}' not found", file_path);
+        eprintln!("Error: {} file '{}' not found", env_var.to_lowercase(), file_path);
         process::exit(1);
     }
 }
 
-pub fn read_mutation_file() -> Vec<String> {
-    let file_path = get_mutation_file();
+pub fn read_file_lines(env_var: &str, default_name: &str) -> Vec<String> {
+    let file_path = get_config_file(env_var, default_name);
     
     match fs::read_to_string(&file_path) {
         Ok(contents) => {
@@ -31,6 +31,26 @@ pub fn read_mutation_file() -> Vec<String> {
         }
         Err(error) => {
             eprintln!("Error reading mutation file '{}': {}", file_path, error);
+            process::exit(1);
+        }
+    }
+}
+
+pub fn read_mutation_file() -> Vec<String> {
+    read_file_lines("MUTATIONS", "default_mutations")
+}
+
+pub fn read_private_key_file() -> String {
+    let lines = read_file_lines("PRIVATE_KEY", "private_key");
+    //We just want a single private key, so we'll just grab the first string
+     match lines.len() {
+        0 => {
+            eprintln!("Error: Private key file is empty");
+            process::exit(1);
+        }
+        1 => lines[0].clone(),
+        n => {
+            eprintln!("Error: Private key file should contain exactly one key, found {}", n);
             process::exit(1);
         }
     }
