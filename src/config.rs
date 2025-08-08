@@ -36,6 +36,25 @@ pub fn read_file_lines(env_var: &str, default_name: &str) -> Vec<String> {
     }
 }
 
+///Slightly different reading: we should not filter out spaces for passwords, and use line breaks as delimiters
+pub fn read_password_ideas() -> Vec<String> {
+    let file_path = get_config_file("PASSWORD_IDEAS", "password_ideas");
+    
+    match fs::read_to_string(&file_path) {
+        Ok(contents) => {
+            contents
+                .lines()
+                .map(|line| line.to_string())           // Keep original line as-is
+                .filter(|line| !line.trim().is_empty()) // Only filter truly empty lines
+                .collect()
+        }
+        Err(error) => {
+            eprintln!("Error reading password ideas file '{}': {}", file_path, error);
+            process::exit(1);
+        }
+    }
+}
+
 pub fn read_mutation_file() -> Vec<String> {
     read_file_lines("MUTATIONS", "default_mutations")
 }
