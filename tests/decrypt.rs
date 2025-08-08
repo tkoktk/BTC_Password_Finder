@@ -1,4 +1,5 @@
 use bip38::Decrypt;
+use btc_password_finder::config::{read_private_key_file, write_found_password};
 // Grabbed these examples from the bip38 1.1.1 crate docs
 
 #[test]
@@ -19,8 +20,8 @@ fn test_bip38_decryption_compressed() {
 #[test]
 fn test_bip38_decryption_with_generated_example() {
     //Manually generated a new wallet with the password "baysage"
-    let private_key = "6PnMx7BZDf5xUWoPUDZaD8rbVJ5qtn95WaGuijZpwFgDuVJTTakyTvY2t9";
-    let password = "baysage";
+    let private_key = "6PnWc3girW7SaS5kpNvjS2571gPCDTzQLBjCmJvr8RWiq2YtABzgFAsiK9";
+    let password = "HELLO";
 
     let result = private_key.decrypt(password);
     assert!(result.is_ok(), "Should successfully decrypt with correct password");
