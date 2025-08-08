@@ -19,6 +19,8 @@ fn main() {
     // let private_key = read_private_key_file();
     // println!("Private Key: {:?}", private_key);
 
+    //RUSTFLAGS="-C target-cpu=native" cargo run --release
+
     let mut coordinator = Coordinator::new();
     //JoHnNyApPlEs
     match coordinator.start() {

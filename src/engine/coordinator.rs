@@ -93,9 +93,7 @@ impl Coordinator {
             handles.push(handle);
         }
         
-            drop(result_tx); //Close result channel when workers are done
-            
-            //Generator thread
+        //Generator thread
             let found_gen = Arc::clone(&found);
             let generator = thread::spawn(move || {
             let mut worker_idx = 0;
@@ -152,8 +150,11 @@ impl Coordinator {
             }
         });
         
+        // Drop result_tx after spawning all threads so workers can send results
+        drop(result_tx);
+        
         //Wait for result
-        match result_rx.recv_timeout(Duration::from_secs(10)) {
+        match result_rx.recv_timeout(Duration::from_secs(300)) {
             Ok(password) => {
                 let elapsed = start.elapsed();
                 let total = total_tested.load(Ordering::Relaxed);
