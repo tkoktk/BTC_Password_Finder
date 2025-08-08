@@ -55,7 +55,7 @@ pub fn read_password_ideas() -> Vec<String> {
     }
 }
 
-pub fn read_mutation_file() -> Vec<String> {
+pub fn _read_mutation_file() -> Vec<String> {
     read_file_lines("MUTATIONS", "default_mutations")
 }
 

@@ -86,7 +86,8 @@ impl Coordinator {
                         local_tested += 1;
                     }
                     
-                    total_tested.fetch_add(batch_size, Ordering::Relaxed);
+                    total_tested.fetch_add(local_tested, Ordering::Relaxed);
+                    local_tested = 0;
                 }
             });
             
@@ -97,7 +98,7 @@ impl Coordinator {
             let found_gen = Arc::clone(&found);
             let generator = thread::spawn(move || {
             let mut worker_idx = 0;
-            let mut batch_size = 25_000;
+            let batch_size = 100; // Smaller batches for better worker distribution
             let num_workers = worker_senders.len();
             let mut total_sent = 0;
                 
@@ -105,10 +106,10 @@ impl Coordinator {
                 match iterator.next_batch(batch_size) {
                     Some(batch) => {
                         let batch_len = batch.len();
-                        println!("Generator sending batch of {} to worker {}", batch_len, worker_idx);
+                        println!("📦 Sending batch of {} passwords to worker {}", batch_len, worker_idx);
                         
                         if worker_senders[worker_idx].send(batch).is_err() {
-                            println!("Generator: Worker {} disconnected", worker_idx);
+                            // Worker disconnected
                             break;
                         }
                         
@@ -116,13 +117,13 @@ impl Coordinator {
                         worker_idx = (worker_idx + 1) % num_workers;
                     }
                     None => {
-                        println!("Generator: Password space exhausted after {} passwords", total_sent);
+                        println!("🔍 Generated {} password variations", total_sent);
                         break;
                     }
                 }
             }
             
-            println!("Generator shutting down. Total sent: {}", total_sent);
+            // Generator complete
             
             //signal workers to stop
             drop(worker_senders);

@@ -1,5 +1,4 @@
 use bip38::Decrypt;
-use btc_password_finder::config::{read_private_key_file, write_found_password};
 // Grabbed these examples from the bip38 1.1.1 crate docs
 
 #[test]
